@@ -11,7 +11,7 @@
 
 |          CARPETA          |   MD   | Fecha Entrega | Prorroga |
 | :------------------------: | :----: | :-----------: | :------: |
-| [Practica 1](./Practicas/Practica1/) | [View](.) | --- |   ---   |
+| [Practica 1](./Practicas/Practica1/) | [View](.) | 21/Agosto |   ---   |
 | [Practica 2](./Practicas/Practica2/) | [View](.) | --- |   ---   |
 
 ### Proyectos
@@ -35,8 +35,8 @@
     <tbody>
         <tr>
             <td rowspan=2 align="center">Prácticas</td>
-            <td rowspan=1 align="center"><a href="./Enunciados/Practicas/">Práctica 1</a></td>
-            <td align="center">---</td>
+            <td rowspan=1 align="center"><a href="./Enunciados/Practicas/[SBD2]Practica1.pdf">Práctica 1</a></td>
+            <td align="center">21/Agosto</td>
             <td align="center">---</td>
         </tr>
         <tr>
