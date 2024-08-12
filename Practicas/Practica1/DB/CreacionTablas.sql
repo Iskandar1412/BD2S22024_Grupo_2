@@ -15,7 +15,7 @@ CREATE TABLE Usuarios (
     Birth DATE NOT NULL,
     Pass VARCHAR(100) NOT NULL,
     Credits INT DEFAULT 0,
-    EmailConfirmed BOOLEAN DEFAULT FALSE
+    EmailConfirmed BOOLEAN DEFAULT TRUE
 );
 
 -- Roles
