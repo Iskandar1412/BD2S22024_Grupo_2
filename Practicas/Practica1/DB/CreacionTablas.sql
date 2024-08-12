@@ -1,3 +1,11 @@
+-- docker run --name practica1 -e POSTGRES_PASSWORD=super -p 5432:5432 -d postgres:latest
+-- create database practica1
+-- si se conecta por dbeaver
+-- HOST: 0.0.0.0 (windows)
+-- DATABASE: postgres (al crear la db si se quiere usar con diferente se usa el create database y se cambia por el que se creo)
+-- NombreUsuario: postgres: postgres
+-- Contraseña: <la puesta> 
+
 -- Usuarios
 CREATE TABLE Usuarios (
     Id SERIAL PRIMARY KEY,
