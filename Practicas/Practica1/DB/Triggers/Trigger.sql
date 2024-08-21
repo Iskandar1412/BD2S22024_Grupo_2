@@ -9,7 +9,6 @@ $$language plpgsql;
 
 
 -------------------------------------- IMPLEMENTACIÓN DE TRIGGERS -------------------------------------
-=======
 CREATE OR REPLACE FUNCTION history_log_trigger_function() RETURNS TRIGGER AS $$
 BEGIN
     -- Manejar eventos de INSERT
