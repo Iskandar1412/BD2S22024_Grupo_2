@@ -28,8 +28,8 @@ BEGIN
         VALUES (v_userid, p_codcourse);
 
         -- Registro en historial
-        INSERT INTO HistoryLog (Action, TableName, RecordId, StatusLog)
-        VALUES ('INSERT', 'ProfileStudent', v_userid, 'SUCCESS');
+        -- INSERT INTO HistoryLog (Action, TableName, RecordId, StatusLog)
+        -- VALUES ('INSERT', 'ProfileStudent', v_userid, 'SUCCESS');
 
     END IF;
 END;

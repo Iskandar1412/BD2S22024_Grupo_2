@@ -8,11 +8,10 @@ DECLARE
     v_courseid INT;
 BEGIN
     INSERT INTO Course (Name, CreditsRequired)
-    VALUES (p_name, p_creditsrequired)
-    RETURNING Id INTO v_courseid;
+    VALUES (p_name, p_creditsrequired);
 
     -- Registrar historial
-    INSERT INTO HistoryLog (Action, TableName, RecordId, StatusLog)
-    VALUES ('INSERT', 'Course', v_courseid, 'SUCCESS');
+    -- INSERT INTO HistoryLog (Action, TableName, RecordId, StatusLog)
+    -- VALUES ('INSERT', 'Course', v_courseid, 'SUCCESS');
 END;
 $$;

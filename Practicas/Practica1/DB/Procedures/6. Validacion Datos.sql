@@ -13,7 +13,7 @@ BEGIN
         CreditsRequired = CAST(REGEXP_REPLACE(CreditsRequired::TEXT, '[^0-9]', '', 'g') AS INT);
         
     -- Registro en el historial
-    INSERT INTO HistoryLog (Action, TableName, RecordId, StatusLog)
-    VALUES ('VALIDATION', 'Usuarios/Course', 0, 'SUCCESS');
+    -- INSERT INTO HistoryLog (Action, TableName, RecordId, StatusLog)
+    -- VALUES ('VALIDATION', 'Usuarios/Course', 0, 'SUCCESS');
 END;
 $$;

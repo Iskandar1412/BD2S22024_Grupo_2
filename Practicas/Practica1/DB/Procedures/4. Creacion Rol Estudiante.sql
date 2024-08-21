@@ -10,12 +10,11 @@ BEGIN
         RAISE EXCEPTION 'El rol ya existe';
     ELSE
         INSERT INTO Roles (RoleName)
-        VALUES (p_rolename)
-        RETURNING Id INTO v_roleid;
+        VALUES (p_rolename);
 
         -- Registrar historial
-        INSERT INTO HistoryLog (Action, TableName, RecordId, StatusLog)
-        VALUES ('INSERT', 'Roles', v_roleid, 'SUCCESS');
+        -- INSERT INTO HistoryLog (Action, TableName, RecordId, StatusLog)
+        -- VALUES ('INSERT', 'Roles', v_roleid, 'SUCCESS');
     END IF;
 END;
 $$;

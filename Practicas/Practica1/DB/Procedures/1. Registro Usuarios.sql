@@ -18,11 +18,10 @@ BEGIN
 
     -- Insercion de usuario
     INSERT INTO Usuarios (Firstname, Lastname, Email, Birth, Pass, Credits)
-    VALUES (p_firstname, p_lastname, p_email, p_birth, p_pass, p_credits)
-    RETURNING Id INTO v_userid;
+    VALUES (p_firstname, p_lastname, p_email, p_birth, p_pass, p_credits);
 
     -- Insercion en historial
-    INSERT INTO HistoryLog (Action, TableName, RecordId, StatusLog)
-    VALUES ('INSERT', 'Usuarios', v_userid, 'SUCCESS');
+    -- INSERT INTO HistoryLog (Action, TableName, RecordId, StatusLog)
+    -- VALUES ('INSERT', 'Usuarios', v_userid, 'SUCCESS');
 END;
 $$;

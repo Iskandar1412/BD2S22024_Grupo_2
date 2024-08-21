@@ -4,7 +4,6 @@ CALL PR1('Jose Pablo', 'Garcia Robles', 'pablojose@gmail.com', '2000-01-01', '@s
 CALL PR1('Jose Alejandro', 'Gimenez Xin', 'josegim@gmail.com', '2000-01-03', 'xingi13@12', 10);
 CALL PR1('Cesar Augusto', 'Hernandez Gomez', 'cegomez14@gmail.com', '2000-12-05', 'gonandez5412', 10);
 CALL PR1('Jose Alejandro', 'Gimenez Xin', 'josegim@gmail.com', '2000-01-03', 'xingi13@12', 10);
-CALL PR1('Jose Alejandro', 'Gimenez Xin', 'josegim@gmail.com', '2000-01-03', 'xingi13@12', 10);
 CALL PR1('María Fernanda', 'Lopez Martínez', 'maria.fernanda@gmail.com', '1998-05-22', 'ferlopez98', 15);
 CALL PR1('Carlos Alberto', 'Rodríguez Sánchez', 'carlos.rodriguez@hotmail.com', '1995-10-10', 'carlitossan123', 12);
 CALL PR1('Ana Isabel', 'Gómez Torres', 'ana.gomez@yahoo.com', '1999-03-30', 'ani_gomez99', 8);
