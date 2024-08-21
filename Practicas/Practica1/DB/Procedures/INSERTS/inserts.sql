@@ -1,13 +1,16 @@
+-- Rol Estudiante/Tutor
+CALL PR4('Tutor');
+CALL PR4('Estudiante');
+
 -- Registro Usuario
 CALL PR1('Diego Andres', 'Lopez Lopez', 'diand23@gmail.com', '1996-02-01', 'diloans', 6);
 CALL PR1('Jose Pablo', 'Garcia Robles', 'pablojose@gmail.com', '2000-01-01', '@skartar.li', 5);
 CALL PR1('Jose Alejandro', 'Gimenez Xin', 'josegim@gmail.com', '2000-01-03', 'xingi13@12', 10);
 CALL PR1('Cesar Augusto', 'Hernandez Gomez', 'cegomez14@gmail.com', '2000-12-05', 'gonandez5412', 10);
-CALL PR1('Jose Alejandro', 'Gimenez Xin', 'josegim@gmail.com', '2000-01-03', 'xingi13@12', 10);
 CALL PR1('María Fernanda', 'Lopez Martínez', 'maria.fernanda@gmail.com', '1998-05-22', 'ferlopez98', 15);
 CALL PR1('Carlos Alberto', 'Rodríguez Sánchez', 'carlos.rodriguez@hotmail.com', '1995-10-10', 'carlitossan123', 12);
 CALL PR1('Ana Isabel', 'Gómez Torres', 'ana.gomez@yahoo.com', '1999-03-30', 'ani_gomez99', 8);
-CALL PR1('Luis Eduardo', 'Pérez Ramírez', 'luis.perez@gmail.com', '2001-07-17', 'lucho_2001', 20)
+CALL PR1('Luis Eduardo', 'Pérez Ramírez', 'luis.perez@gmail.com', '2001-07-17', 'lucho_2001', 20);
 CALL PR1('Elena Patricia', 'Vargas Ruiz', 'elena.vargas@hotmail.com', '2002-02-28', 'paty_vr28', 18);
 CALL PR1('Gabriel Andrés', 'Martínez Flores', 'gabriel.martinez@gmail.com', '1997-09-15', 'gabi_andres97', 25);
 CALL PR1('Lucía Alejandra', 'Hernández Ocampo', 'lucia.hernandez@yahoo.com', '2000-12-05', 'lucy_hernandez2000', 22);
@@ -45,7 +48,7 @@ CALL PR5('Biología Molecular', 15);
 CALL PR5('Filosofía Contemporánea', 16);
 CALL PR5('Literatura Clásica', 17);
 CALL PR5('Cálculo Diferencial', 18);
-CALL PR5('Programación en C++', 19);
+CALL PR5('Software Avanzado', 19);
 CALL PR5('Estadística Aplicada', 20);
 CALL PR5('Geografía Física', 21);
 CALL PR5('Economía Internacional', 22);
@@ -68,17 +71,12 @@ CALL PR5('Historia del Arte', 0);
 CALL PR5('Marketing Digital', 3);
 CALL PR5('Contabilidad Financiera', 40);
 CALL PR5('Arquitectura de Computadoras', 41);
-CALL PR5('Cálculo Diferencial', 12);
 CALL PR5('Álgebra Lineal', 15);
-CALL PR5('Química General', 18);
 CALL PR5('Física II', 14);
 CALL PR5('Programación Avanzada', 20);
-CALL PR5('Ingeniería de Software', 17);
 CALL PR5('Matemáticas Discretas', 13);
-CALL PR5('Electromagnetismo', 19);
 CALL PR5('Termodinámica', 16);
 CALL PR5('Estructuras de Datos', 21);
-CALL PR5('Redes de Computadoras', 22);
 CALL PR5('Bases de Datos', 25);
 CALL PR5('Inteligencia Artificial', 24);
 CALL PR5('Probabilidad y Estadística', 23);
@@ -98,10 +96,6 @@ CALL PR5('Análisis de Señales', 38);
 CALL PR5('Computación Cuántica', 39);
 CALL PR5('Desarrollo Web', 40);
 CALL PR5('Sistemas Digitales', 41);
-
--- Rol Estudiante/Tutor
-CALL PR4('Tutor');
-CALL PR4('Estudiante');
 
 -- Asignacion Curso
 CALL PR3('john.doe@example.com', 4);
