@@ -37,6 +37,7 @@ CALL PR1('Adriana Pilar', 'Díaz López', 'adriana.diaz@hotmail.com', '1998-03-1
 CALL PR1('Mauricio José', 'Martínez Flores', 'mauricio.martinez@gmail.com', '1999-12-01', 'maumartflo99', 30);
 CALL PR1('Jessica Alejandra', 'Vargas Muñoz', 'jessica.vargas@yahoo.com', '2000-09-25', 'jessivargmu00', 15);
 CALL PR1('Héctor Manuel', 'Reyes Castillo', 'hector.reyes@hotmail.com', '2001-04-14', 'hecmanr00', 23);
+CALL PR1('Son', 'Wujon', 'wuju@hotmail.com', '2001-04-14', 'wuju', 22);
 
 -- Creacion Curso
 CALL PR5('Fisica Basica', 11);
@@ -126,13 +127,16 @@ CALL PR3('karina.mendoza@yahoo.com', 35);
 CALL PR3('rodrigo.perez@hotmail.com', 36);
 
 -- Cambio rol
-CALL PR2('florencia.ortiz@gmail.com', 1);
-CALL PR2('gustavo.ramirez@yahoo.com', 0);
+CALL PR2('florencia.ortiz@gmail.com', 2);
+CALL PR2('gustavo.ramirez@yahoo.com', 2);
 CALL PR2('adriana.diaz@hotmail.com', 1);
-CALL PR2('mauricio.martinez@gmail.com', 0);
-CALL PR2('jessica.vargas@yahoo.com', 1);
-CALL PR2('hector.reyes@hotmail.com', 0);
+CALL PR2('mauricio.martinez@gmail.com', 2);
+CALL PR2('jessica.vargas@yahoo.com', 2);
+CALL PR2('hector.reyes@hotmail.com', 1);
 CALL PR2('karina.mendoza@yahoo.com', 1);
+CALL PR2('wuju@hotmail.com', 1);
+
+select * from usuarios where usuarios.email = 'florencia.ortiz@gmail.com';
 
 -- Validacion Datos
 CALL PR6();
