@@ -49,7 +49,7 @@ CREATE TABLE Notification (
 -- Course
 CREATE TABLE Course (
     Id SERIAL PRIMARY KEY,
-    Name VARCHAR(100) NOT NULL,
+    Name VARCHAR(100) UNIQUE NOT NULL,
     CreditsRequired INT NOT NULL
 );
 

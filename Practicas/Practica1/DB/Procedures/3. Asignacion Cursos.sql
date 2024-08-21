@@ -19,14 +19,14 @@ BEGIN
     SELECT CreditsRequired INTO v_coursecredits FROM Course WHERE Id = p_codcourse;
     IF v_credits < v_coursecredits THEN
         RAISE EXCEPTION 'El usuario no tiene suficientes créditos para tomar este curso';
-
+    ELSE
         -- Asignacion del curso
         INSERT INTO CourseAssignment (UserId, CourseId)
         VALUES (v_userid, p_codcourse);
 
         -- Registrar en historial
-        INSERT INTO HistoryLog (Action, TableName, RecordId, StatusLog)
-        VALUES ('INSERT', 'CourseAssignment', v_userid, 'SUCCESS');
+        -- INSERT INTO HistoryLog (Action, TableName, RecordId, StatusLog)
+        -- VALUES ('INSERT', 'CourseAssignment', v_userid, 'SUCCESS');
 
     END IF;
 END;
