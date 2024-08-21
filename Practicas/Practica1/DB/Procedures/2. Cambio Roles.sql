@@ -10,6 +10,7 @@ DECLARE
     v_student_roleid INT;
     v_existing_student INT;
     v_existing_tutor INT;
+    v_course_random INT;
 BEGIN
     -- Obtención id usuario
     SELECT Id INTO v_userid FROM Usuarios WHERE Email = p_email AND EmailConfirmed = TRUE;
@@ -23,6 +24,12 @@ BEGIN
     IF v_tutor_roleid IS NULL OR v_student_roleid IS NULL THEN
         RAISE EXCEPTION 'Rol no definido';
     END IF;
+
+    -- Asignación de un curso aleatorio a v_course_random
+    SELECT Id INTO v_course_random
+    FROM Course
+    ORDER BY RANDOM()
+    LIMIT 1;
 
     -- Verificación de existencia en las tablas correspondientes
     SELECT COUNT(*) INTO v_existing_student FROM ProfileStudent WHERE UserId = v_userid AND RoleId = v_student_roleid;
@@ -60,8 +67,8 @@ BEGIN
                 DELETE FROM ProfileStudent WHERE UserId = v_userid;
             END IF;
             -- Asignar rol de tutor
-            INSERT INTO TutorProfile (UserId, CourseId)
-            VALUES (v_userid, p_rol);
+            INSERT INTO TutorProfile (UserId, RoleId, CourseId)
+            VALUES (v_userid, p_rol, v_course_random);
 
             INSERT INTO Notification(UserID, Mesage)
             VALUES (v_userid, 'Cambio de rol a tutor');
