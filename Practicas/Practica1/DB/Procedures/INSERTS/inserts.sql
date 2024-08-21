@@ -1,7 +1,6 @@
 -- Rol Estudiante/Tutor
 CALL PR4('Tutor');
 CALL PR4('Estudiante');
-
 -- Registro Usuario
 CALL PR1('Diego Andres', 'Lopez Lopez', 'diand23@gmail.com', '1996-02-01', 'diloans', 6);
 CALL PR1('Jose Pablo', 'Garcia Robles', 'pablojose@gmail.com', '2000-01-01', '@skartar.li', 5);
@@ -103,6 +102,7 @@ CALL PR3('john.doe@example.com', 4);
 CALL PR3('josegim@gmail.com', 12);
 CALL PR3('maria.fernanda@gmail.com', 15);
 CALL PR3('carlos.rodriguez@hotmail.com', 18);
+CALL PR3('pedro.ramirez@yahoo.com', 18);
 CALL PR3('ana.gomez@yahoo.com', 14);
 CALL PR3('luis.perez@gmail.com', 20);
 CALL PR3('elena.vargas@hotmail.com', 21);
@@ -135,8 +135,6 @@ CALL PR2('jessica.vargas@yahoo.com', 2);
 CALL PR2('hector.reyes@hotmail.com', 1);
 CALL PR2('karina.mendoza@yahoo.com', 1);
 CALL PR2('wuju@hotmail.com', 1);
-
-select * from usuarios where usuarios.email = 'florencia.ortiz@gmail.com';
 
 -- Validacion Datos
 CALL PR6();
