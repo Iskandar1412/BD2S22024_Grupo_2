@@ -11,6 +11,8 @@ begin
 end;
 $$ language plpgsql;
 
+
+
 --- Func_tutor_course
 create or replace function Func_tutor_course(id_tutor INT)
 returns table(id_curso INT, nombre_curso VARCHAR(100)) as $$
@@ -18,14 +20,14 @@ begin
 	return query
 	select CourseId,Name
 	from Course
-	inner join Course on Course.Id = TutorProfile.CourseId
+	inner join TutorProfile on Course.Id = TutorProfile.CourseId
 	where TutorProfile.id = id_tutor;
 end;
 $$ language plpgsql;
 
 --- Func_notification_usuarios
 create or replace function Func_notification_usuarios(id_usuario INT)
-returns table(id_mensaje INT, Mensaje text,SentAt TIMESTAMP) as $$
+returns table(id_mensaje INT, Mensaje text,Tiempo_De_Envio TIMESTAMP) as $$
 begin
 	return query
 	select Id,Mesage,SentAt
@@ -56,3 +58,13 @@ begin
 		
 end;
 $$ language plpgsql;
+
+------------------------ LLAMADAS A FUNCIONES -----------------------
+-- SE USA ID DEL CURSO
+select * from Func_course_usuarios(18);
+-- SE USA ID DEL TUTOR
+select * from Func_tutor_course(1);
+-- SE USA ID DEL USUARIO
+select * from Func_notification_usuarios(27);
+select * from Func_usuarios();
+select * from Func_logger();
