@@ -57,6 +57,7 @@ CREATE TABLE Course (
 CREATE TABLE TutorProfile (
     Id SERIAL PRIMARY KEY,
     UserId INT REFERENCES Usuarios(Id),
+    RoleId INT REFERENCES Roles(Id),
     CourseId INT REFERENCES Course(Id)
 );
 
