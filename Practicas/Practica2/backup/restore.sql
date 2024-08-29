@@ -1,8 +1,11 @@
 -- Restaurar Backup Completo
-RESTORE DATABASE Clinica FROM DISK = '/var/opt/mssql/backups/Clinica_Full.bak' WITH NORECOVERY;
+RESTORE DATABASE Practica2 FROM DISK = '/var/opt/mssql/app/backups/Clinica_Full.bak' WITH NORECOVERY;
+RESTORE DATABASE Practica2 WITH RECOVERY;
 
 -- Restaurar Backup Incremental
-RESTORE DATABASE Clinica FROM DISK = '/var/opt/mssql/backups/Clinica_Incremental.bak' WITH NORECOVERY;
+RESTORE DATABASE Practica2 FROM DISK = '/var/opt/mssql/app/backups/Clinica_Differential.bak' WITH NORECOVERY;
+RESTORE DATABASE Practica2 WITH RECOVERY;
 
 -- Restaurar Backup Diferencial
-RESTORE DATABASE Clinica FROM DISK = '/var/opt/mssql/backups/Clinica_Diferencial.bak' WITH NORECOVERY;
+RESTORE LOG Practica2 FROM DISK = '/var/opt/mssql/app/backups/Clinica_Log.bak' WITH NORECOVERY;
+RESTORE DATABASE Practica2 WITH RECOVERY;

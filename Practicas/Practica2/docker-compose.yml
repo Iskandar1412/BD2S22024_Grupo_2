@@ -5,13 +5,12 @@ services:
     build: .
     container_name: sqlserver
     environment:
-      SA_PASSWORD: "YourStrong@Passw0rd"
+      SA_PASSWORD: "Practica1@"
       ACCEPT_EULA: "Y"
     ports:
       - "1433:1433"
     volumes:
-      - ./data:/var/opt/mssql/data
-      - ./backups:/var/opt/mssql/backups
+      - ./app:/var/opt/mssql/app
     networks:
       - sql_network
 

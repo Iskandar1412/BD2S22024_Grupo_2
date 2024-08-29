@@ -1,3 +1,5 @@
+USE Practica2;
+
 CREATE PROCEDURE InsertarDatosCompletos
     @edad INT,
     @genero CHAR(1),
