@@ -1,8 +1,8 @@
 -- Backup Completo
-BACKUP DATABASE Clinica TO DISK = '/var/opt/mssql/backups/Clinica_Full.bak' WITH FORMAT;
+BACKUP DATABASE Practica2 TO DISK = '/var/opt/mssql/app/backups/Clinica_Full.bak' WITH FORMAT;
 
 -- Backup Incremental
-BACKUP DATABASE Clinica TO DISK = '/var/opt/mssql/backups/Clinica_Incremental.bak' WITH DIFFERENTIAL;
+BACKUP DATABASE Practica2 TO DISK = '/var/opt/mssql/app/backups/Clinica_Differential.bak' WITH DIFFERENTIAL;
 
 -- Backup Diferencial
-BACKUP DATABASE Clinica TO DISK = '/var/opt/mssql/backups/Clinica_Diferencial.bak' WITH DIFFERENTIAL;
+BACKUP LOG Practica2 TO DISK = '/var/opt/mssql/app/backups/Clinica_Log.bak';

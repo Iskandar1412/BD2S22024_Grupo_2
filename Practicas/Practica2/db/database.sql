@@ -1,4 +1,6 @@
 -- SQL Server
+CREATE DATABASE Practica2;
+USE Practica2;
 
 CREATE TABLE Paciente (
     id_paciente INT IDENTITY(1, 1) PRIMARY KEY,
@@ -13,7 +15,7 @@ CREATE TABLE Habitacion (
 
 CREATE TABLE Log_Habitacion (
     id_log_habitacion INT IDENTITY(1, 1) PRIMARY KEY,
-    id_habitacion INT NOT NULL
+    id_habitacion INT NOT NULL,
     timestamp DATETIME DEFAULT GETDATE(),
     status CHAR(1) NOT NULL,
     FOREIGN KEY (id_habitacion) REFERENCES Habitacion(id_habitacion)
