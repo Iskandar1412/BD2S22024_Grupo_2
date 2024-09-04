@@ -1,8 +1,13 @@
 -- Backup Completo
-BACKUP DATABASE Practica2 TO DISK = '/var/opt/mssql/app/backups/Clinica_Full.bak' WITH FORMAT;
+BACKUP DATABASE Practica2 TO DISK = '/var/opt/mssql/app/backups/Pr2_Full.bak' WITH FORMAT;
 
 -- Backup Incremental
-BACKUP DATABASE Practica2 TO DISK = '/var/opt/mssql/app/backups/Clinica_Differential.bak' WITH DIFFERENTIAL;
+BACKUP DATABASE Practica2 TO DISK = '/var/opt/mssql/app/backups/Pr2_Differential.bak' WITH DIFFERENTIAL;
 
 -- Backup Diferencial
-BACKUP LOG Practica2 TO DISK = '/var/opt/mssql/app/backups/Clinica_Log.bak';
+BACKUP LOG Practica2 TO DISK = '/var/opt/mssql/app/backups/Pr2_Log.bak';
+
+
+-- En caso de que de error de permisos
+-- ❯ chmod -R 777 ./app/backups
+-- ❯ chmod -R 777 ./app
