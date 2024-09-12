@@ -1,11 +1,11 @@
--- Restaurar Backup Completo
+-- Restaurar el backup completo
 RESTORE DATABASE Practica2 FROM DISK = '/var/opt/mssql/app/backups/Pr2_Full.bak' WITH NORECOVERY;
-RESTORE DATABASE Practica2 WITH RECOVERY;
 
--- Restaurar Backup Incremental
+-- Restaurar el backup diferencial
 RESTORE DATABASE Practica2 FROM DISK = '/var/opt/mssql/app/backups/Pr2_Differential.bak' WITH NORECOVERY;
-RESTORE DATABASE Practica2 WITH RECOVERY;
 
--- Restaurar Backup Diferencial
+-- Restaurar el log de transacciones (si lo tienes)
 RESTORE LOG Practica2 FROM DISK = '/var/opt/mssql/app/backups/Pr2_Log.bak' WITH NORECOVERY;
+
+-- Recuperar la base de datos
 RESTORE DATABASE Practica2 WITH RECOVERY;
