@@ -1,12 +1,15 @@
 # pip install musicbrainzngs python-dotenv
 import os
 import requests
+import time
 import pyodbc
 from dotenv import load_dotenv
-import musicbrainzngs
 
-# Configurar el User-Agent para la API de MusicBrainz
-musicbrainzngs.set_useragent("MyMusicApp", "1.0", "panasgpt69@gmail.com")
+BASE_URL = "https://musicbrainz.org/ws/2"
+HEADERS = {
+    'User-Agent': 'MyMusicApp/1.0 (panasgpt69@gmail.com)',
+    'Accept': 'application/json'
+}
 
 # Cargar las variables de entorno
 load_dotenv()
