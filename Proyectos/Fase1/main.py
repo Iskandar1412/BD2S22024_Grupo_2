@@ -1,7 +1,12 @@
+# pip install musicbrainzngs python-dotenv
 import os
 import requests
 import pyodbc
 from dotenv import load_dotenv
+import musicbrainzngs
+
+# Configurar el User-Agent para la API de MusicBrainz
+musicbrainzngs.set_useragent("MyMusicApp", "1.0", "panasgpt69@gmail.com")
 
 # Cargar las variables de entorno
 load_dotenv()
@@ -59,23 +64,13 @@ def execute_stored_procedure(proc_name, params):
     finally:
         conn.close()
 
-# Funciones para insertar en la base de datos usando los procedimientos almacenados
 
+# Inserción
 def insert_country(country_name, iso_code=None):
     execute_stored_procedure("EXEC InsertCountry @name = ?, @iso_code = ?", (country_name, iso_code))
 
 def insert_artist(artist_data):
-    params = (
-        artist_data['name'],
-        artist_data['sort_name'],
-        artist_data['begin_date'],
-        artist_data['end_date'],
-        artist_data['type'],
-        artist_data['gender'],
-        artist_data['country_id'],
-        artist_data['area'],
-        artist_data['description']
-    )
+    params = (artist_data['name'], artist_data['sort_name'], artist_data['begin_date'], artist_data['end_date'], artist_data['type'], artist_data['gender'], artist_data['country_id'], artist_data['area'], artist_data['description'])
     execute_stored_procedure("EXEC InsertArtist ?, ?, ?, ?, ?, ?, ?, ?, ?", params)
 
 def insert_artist_credit(credit_name):
@@ -157,60 +152,116 @@ def insert_album_tag(album_id, tag_id):
 def insert_track_tag(track_id, tag_id):
     execute_stored_procedure("EXEC InsertTrackTag @track_id = ?, @tag_id = ?", (track_id, tag_id))
 
-# Función para obtener los artistas desde la API de MusicBrainz y realizar las inserciones en la base de datos
-def fetch_all_artists_from_musicbrainz():
+# https://musicbrainz.org/ws/2
+# Función para buscar todos los artistas manejando la paginación
+def get_all_artists(limit=100):
     offset = 0
-    limit = 100  # Número de resultados por página
-    has_more_artists = True
-
-    while has_more_artists:
-        url = "https://musicbrainz.org/ws/2/artist/"
+    all_artists = []
+    while True:
+        url = f"{BASE_URL}/artist/"
         params = {
-            'query': 'artist:*',  # Buscar todos los artistas
-            'fmt': 'json',
+            'query': 'artist:*',  # Este query busca todos los artistas
             'limit': limit,
-            'offset': offset
+            'offset': offset,
+            'fmt': 'json'
         }
-        headers = {
-            'User-Agent': 'MyMusicApp/1.0 ( your-email@example.com )'
-        }
-
         try:
-            response = requests.get(url, headers=headers, params=params)
+            response = requests.get(url, headers=HEADERS, params=params)
             response.raise_for_status()
             data = response.json()
 
-            if data and data['artists']:
-                for artist_info in data['artists']:
-                    formatted_artist_data = {
-                        'name': artist_info['name'],
-                        'sort_name': artist_info['sort-name'],
-                        'begin_date': artist_info.get('life-span', {}).get('begin'),
-                        'end_date': artist_info.get('life-span', {}).get('end'),
-                        'type': artist_info.get('type'),
-                        'gender': artist_info.get('gender'),
-                        'country': artist_info.get('country'),
-                        'area': artist_info.get('area', {}).get('name'),
-                        'description': artist_info.get('disambiguation')
-                    }
+            # Obtener la lista de artistas de la respuesta
+            artists = data.get('artists', [])
+            if not artists:
+                break  # No hay más artistas, salir del bucle
 
-                    # Insertar artista
-                    artist_id = insert_artist(formatted_artist_data)
+            all_artists.extend(artists)  # Añadir los artistas a la lista global
+            offset += limit  # Incrementar el offset para la siguiente página
 
-                    # Insertar géneros relacionados con el artista
-                    if artist_info.get('tags'):
-                        for tag in artist_info['tags']:
-                            insert_artist_genre(artist_id, tag['name'])
+            # Puedes añadir un delay para evitar sobrecargar la API
+            time.sleep(1)
+        except requests.RequestException as e:
+            print(f"Error fetching artists: {e}")
+            break
 
-                # Actualizar el offset para la siguiente página
-                offset += limit
-            else:
-                # No hay más artistas para procesar
-                has_more_artists = False
+    return all_artists
 
-        except requests.exceptions.RequestException as e:
-            print(f"Error fetching data from MusicBrainz API: {e}")
-            has_more_artists = False  # Detener si hay un error
+# Función para obtener todos los lanzamientos de un artista manejando la paginación
+def get_all_releases_by_artist(artist_mbid, limit=100):
+    offset = 0
+    all_releases = []
+    while True:
+        url = f"{BASE_URL}/release/"
+        params = {
+            'artist': artist_mbid,
+            'limit': limit,
+            'offset': offset,
+            'fmt': 'json'
+        }
+        try:
+            response = requests.get(url, headers=HEADERS, params=params)
+            response.raise_for_status()
+            data = response.json()
+
+            # Obtener la lista de lanzamientos de la respuesta
+            releases = data.get('releases', [])
+            if not releases:
+                break  # No hay más lanzamientos, salir del bucle
+
+            all_releases.extend(releases)  # Añadir los lanzamientos a la lista global
+            offset += limit  # Incrementar el offset para la siguiente página
+
+            # Añadir un pequeño retraso para evitar sobrecargar la API
+            time.sleep(1)
+        except requests.RequestException as e:
+            print(f"Error fetching releases for artist {artist_mbid}: {e}")
+            break
+
+    return all_releases
+
+# Inserción automática de todos los artistas y álbumes
+def insert_all_artists_and_albums():
+    artists = get_all_artists(limit=100)
+    
+    if not artists:
+        return
+
+    for artist in artists:
+        # Insertar el artista
+        artist_name = artist.get('name', '')
+        sort_name = artist.get('sort-name', '')
+        begin_date = artist.get('life-span', {}).get('begin', None)
+        end_date = artist.get('life-span', {}).get('end', None)
+        artist_type = artist.get('type', None)
+        gender = artist.get('gender', None)
+        country = artist.get('country', None)
+        
+        insert_artist({
+            'name': artist_name,
+            'sort_name': sort_name,
+            'begin_date': begin_date,
+            'end_date': end_date,
+            'type': artist_type,
+            'gender': gender,
+            'country_id': country,  # Aquí debes mapear el ID del país desde la tabla Country
+            'area': None,
+            'description': None
+        })
+
+        # Obtener todos los álbumes del artista e insertarlos
+        artist_mbid = artist['id']
+        albums = get_all_releases_by_artist(artist_mbid)
+        
+        for album in albums:
+            album_title = album.get('title', '')
+            release_date = album.get('date', None)
+            
+            insert_album({
+                'title': album_title,
+                'release_date': release_date,
+                'artist_id': artist_mbid  # El ID del artista ya insertado
+            })
+
 
 # Inicializar el esquema de base de datos
 def init_database_schema():
@@ -223,13 +274,23 @@ def init_database_schema():
         conn.commit()
         conn.close()
 
+def init_procedure_schema():
+    path = os.path.join(os.path.dirname(__file__), 'Procedures/procedures.sql')
+    with open(path, 'r', encoding='utf-8') as file:
+        sql_statements = file.read().split('GO')
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        for statement in sql_statements:
+            if statement.strip():
+                cursor.execute(statement)
+        conn.commit()
+        conn.close()
+
 # Función principal
 def main():
-    # Puedes usar esta función para inicializar la base de datos si es necesario
-    # init_database_schema()
+    insert_all_artists_and_albums()
 
-    # Obtener artistas desde MusicBrainz e insertarlos en la base de datos
-    fetch_all_artists_from_musicbrainz()
+    
 
 if __name__ == "__main__":
     main()
