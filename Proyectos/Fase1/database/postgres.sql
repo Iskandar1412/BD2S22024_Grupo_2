@@ -1,31 +1,29 @@
-USE Proyecto1F1;
-
 -- Paises
 CREATE TABLE Country (
-    id INT IDENTITY(1,1) PRIMARY KEY,
-    name NVARCHAR(255),
-    iso_code NVARCHAR(20)  -- Código ISO del país
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255),
+    iso_code VARCHAR(20)  -- Código ISO del país
 );
 
 -- Artistas
 CREATE TABLE Artist (
-    id INT IDENTITY(1,1) PRIMARY KEY,
-    name NVARCHAR(255),
-    sort_name NVARCHAR(255),  -- Apellido, Nombre
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255),
+    sort_name VARCHAR(255),  -- Apellido, Nombre
     begin_date DATE,
     end_date DATE,
-    type NVARCHAR(200),  -- 'Person' o 'Group'
-    gender NVARCHAR(80),  -- 'Male', 'Female', etc.
+    type VARCHAR(200),  -- 'Person' o 'Group'
+    gender VARCHAR(80),  -- 'Male', 'Female', etc.
     country_id INT,
-    area NVARCHAR(255),  -- Área geográfica del artista
-    description NVARCHAR(MAX),
+    area VARCHAR(255),  -- Área geográfica del artista
+    description TEXT,
     FOREIGN KEY (country_id) REFERENCES Country(id)
 );
 
 -- Créditos de Artista (colaboraciones)
 CREATE TABLE ArtistCredit (
-    id INT IDENTITY(1,1) PRIMARY KEY,
-    name NVARCHAR(255) -- Nombre del crédito colaborativo
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) -- Nombre del crédito colaborativo
 );
 
 -- Detalle de créditos de artista (relación entre Artist y ArtistCredit)
@@ -40,8 +38,8 @@ CREATE TABLE ArtistCreditName (
 
 -- Albums
 CREATE TABLE Album (
-    id INT IDENTITY(1,1) PRIMARY KEY,
-    title NVARCHAR(255),
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255),
     release_date DATE,
     artist_id INT,  -- Clave foránea hacia Artist
     FOREIGN KEY (artist_id) REFERENCES Artist(id)
@@ -49,17 +47,17 @@ CREATE TABLE Album (
 
 -- Grabaciones
 CREATE TABLE Recording (
-    id INT IDENTITY(1,1) PRIMARY KEY,
-    title NVARCHAR(255),
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255),
     length TIME,  -- Duración de la grabación
     artist_credit_id INT,  -- Clave foránea hacia ArtistCredit
     FOREIGN KEY (artist_credit_id) REFERENCES ArtistCredit(id)
 );
 
--- Traks (modificada)
+-- Tracks (modificada)
 CREATE TABLE Track (
-    id INT IDENTITY(1,1) PRIMARY KEY,
-    title NVARCHAR(255),
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255),
     duration TIME,
     album_id INT,  -- Clave foránea hacia Album
     recording_id INT,  -- Clave foránea hacia Recording
@@ -70,8 +68,8 @@ CREATE TABLE Track (
 
 -- Género
 CREATE TABLE Genre (
-    id INT IDENTITY(1,1) PRIMARY KEY,
-    name NVARCHAR(200)
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(200)
 );
 
 -- Relación Artista - Género
@@ -94,20 +92,20 @@ CREATE TABLE TrackGenre (
 
 -- Alias de Artista
 CREATE TABLE ArtistAlias (
-    id INT IDENTITY(1,1) PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     artist_id INT,  -- Clave foránea hacia Artist
-    alias NVARCHAR(255),  -- Alias o nombre alternativo
-    sort_name NVARCHAR(255),  -- Nombre para ordenación
+    alias VARCHAR(255),  -- Alias o nombre alternativo
+    sort_name VARCHAR(255),  -- Nombre para ordenación
     FOREIGN KEY (artist_id) REFERENCES Artist(id)
 );
 
 -- Sellos
 CREATE TABLE Label (
-    id INT IDENTITY(1,1) PRIMARY KEY,
-    name NVARCHAR(255),
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255),
     country_id INT,  -- Clave foránea hacia Country
     established_date DATE,
-    description NVARCHAR(MAX),
+    description TEXT,
     FOREIGN KEY (country_id) REFERENCES Country(id)
 );
 
@@ -122,11 +120,11 @@ CREATE TABLE AlbumLabel (
 
 -- Derechos de Autor
 CREATE TABLE Copyright (
-    id INT IDENTITY(1,1) PRIMARY KEY,
-    copyright_holder NVARCHAR(255),  -- Quién posee los derechos
+    id SERIAL PRIMARY KEY,
+    copyright_holder VARCHAR(255),  -- Quién posee los derechos
     copyright_year INT,  -- Año del derecho de autor
-    copyright_notice NVARCHAR(MAX),  -- Aviso de copyright
-    type NVARCHAR(80)  -- Tipo: 'Song' o 'Album'
+    copyright_notice TEXT,  -- Aviso de copyright
+    type VARCHAR(80)  -- Tipo: 'Song' o 'Album'
 );
 
 -- Derechos de Autor en Album
@@ -149,7 +147,7 @@ CREATE TABLE TrackCopyright (
 
 -- Puntuación de Canciones
 CREATE TABLE Rating (
-    id INT IDENTITY(1,1) PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     track_id INT,  -- Clave foránea hacia la canción
     user_id INT,   -- Clave foránea hacia el usuario que califica
     rating INT CHECK (rating BETWEEN 1 AND 5),  -- Puntuación de 1 a 5 estrellas
@@ -158,8 +156,8 @@ CREATE TABLE Rating (
 
 -- Etiquetas
 CREATE TABLE Tag (
-    id INT IDENTITY(1,1) PRIMARY KEY,
-    name NVARCHAR(200)
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(200)
 );
 
 -- Relación Artista - Etiqueta
@@ -191,8 +189,8 @@ CREATE TABLE TrackTag (
 
 -- Lanzamientos
 CREATE TABLE Release (
-    id INT IDENTITY(1,1) PRIMARY KEY,
-    title NVARCHAR(255),  -- Título del lanzamiento
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255),  -- Título del lanzamiento
     release_group_id INT,  -- Clave foránea hacia ReleaseGroup
     artist_credit_id INT,  -- Clave foránea hacia ArtistCredit
     release_date DATE,     -- Fecha de lanzamiento
@@ -206,18 +204,18 @@ CREATE TABLE Release (
 
 -- Grupo de Lanzamientos
 CREATE TABLE ReleaseGroup (
-    id INT IDENTITY(1,1) PRIMARY KEY,
-    title NVARCHAR(255),  -- Título del grupo de lanzamiento
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255),  -- Título del grupo de lanzamiento
     artist_credit_id INT, -- Clave foránea hacia ArtistCredit
-    type NVARCHAR(200),   -- Tipo de grupo (Álbum, EP, Single, etc.)
+    type VARCHAR(200),   -- Tipo de grupo (Álbum, EP, Single, etc.)
     FOREIGN KEY (artist_credit_id) REFERENCES ArtistCredit(id)
 );
 
 -- Medio (para almacenar formatos como CD, vinilo, digital, etc.)
 CREATE TABLE Medium (
-    id INT IDENTITY(1,1) PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     release_id INT,         -- Clave foránea hacia Release
-    format NVARCHAR(200),   -- Formato del medio (CD, Vinilo, Digital, etc.)
+    format VARCHAR(200),   -- Formato del medio (CD, Vinilo, Digital, etc.)
     position INT,               -- Posición del medio dentro del lanzamiento (CD1, CD2, etc.)
     FOREIGN KEY (release_id) REFERENCES Release(id)
 );
