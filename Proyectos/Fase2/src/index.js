@@ -4,27 +4,57 @@ const { performance } = require('perf_hooks');
 
 async function migrate() {
   // Conexión a MongoDB
-  const mongoClient = new MongoClient('mongodb://localhost:27017');
+  const mongoClient = new MongoClient('mongodb://localhost:27017', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });
   await mongoClient.connect();
-  const db = mongoClient.db('mongoMusicBrainz'); // Nombre de la base de datos en MongoDB
+  const db = mongoClient.db('mongoMusicBrainz');
 
   // Conexión a PostgreSQL
   const pgClient = new Client({
     user: 'postgres',
     host: 'localhost',
-    database: 'fase1',  // Nombre de tu base de datos PostgreSQL
+    database: 'fase1',
     password: 'abc123**',
     port: 5432,
   });
   await pgClient.connect();
 
   // Definir el tamaño del lote
-  const batchSize = 100000; // Tamaño del lote de inserción
+  const batchSize = 100000;
 
   try {
     console.log("Inicio de la migración...");
 
-    // Obtener todos los álbumes de un conjunto de artistas
+    // Función para obtener las canciones de un álbum
+    async function getSongsForAlbums(albumIds) {
+      const songsResult = await pgClient.query(`
+        SELECT distinct t.*, d.id AS album_id 
+        FROM discografia d 
+        INNER JOIN lanzamientos l ON d.id = l.grupo_disc 
+        INNER JOIN medio m ON l.id = m.release_id 
+        INNER JOIN track t ON m.id = t.id_medio 
+        WHERE d.id = ANY($1);
+      `, [albumIds]);
+
+      const songsMap = {};
+      songsResult.rows.forEach(song => {
+        if (!songsMap[song.album_id]) {
+          songsMap[song.album_id] = [];
+        }
+        songsMap[song.album_id].push({
+          track_id: song.id,
+          numero: song.numero,
+          nombre: song.nombre,
+          duracion: song.duracion,
+        });
+      });
+
+      return songsMap;
+    }
+
+    // Función para obtener los álbumes de un conjunto de artistas
     async function getAlbumsForArtists(artistIds) {
       const albumsResult = await pgClient.query(`
         SELECT d.*, a.id AS artist_id
@@ -36,13 +66,16 @@ async function migrate() {
         AND d.tipo = 1;
       `, [artistIds]);
 
+      const albumIds = albumsResult.rows.map(album => album.id);
+      const songsMap = await getSongsForAlbums(albumIds);
+
       const albumsMap = {};
       albumsResult.rows.forEach(album => {
         if (!albumsMap[album.artist_id]) {
           albumsMap[album.artist_id] = [];
         }
         albumsMap[album.artist_id].push({
-
+          pg_id: album.id,
           titulo: album.titulo,
           rating: album.rating,
           num_calificaciones: album.num_calificaciones,
@@ -51,7 +84,8 @@ async function migrate() {
             anio: album.anio_salida,
             mes: album.mes_salida,
             dia: album.dia_salida,
-          }
+          },
+          canciones: songsMap[album.id] || [], // Añadir las canciones al álbum
         });
       });
 
@@ -78,23 +112,21 @@ async function migrate() {
         // Obtener IDs de los artistas en este lote
         const artistIds = rows.map(row => row.id);
 
-        // Obtener los álbumes de los artistas en este lote
+        // Obtener los álbumes de los artistas en este lote, junto con sus canciones
         const albumsMap = await getAlbumsForArtists(artistIds);
 
         // Transformar y preparar el lote de datos para insertar en MongoDB
         const batchData = rows.map(artist => ({
+          pg_id: artist.id,
           nombre: artist.nombre,
           comentario: artist.comentario,
           tipo: {
-     
             nombre: artist.tipo_nombre,
           },
           genero: {
-        
             nombre: artist.genero_nombre,
           },
           lugar: {
- 
             nombre: artist.lugar_nombre,
           },
           inicio: {
@@ -107,14 +139,15 @@ async function migrate() {
             mes: artist.mes_final,
             dia: artist.dia_final,
           },
-          discografia: albumsMap[artist.id] || [], // Asocia los álbumes correspondientes
+          discografia: albumsMap[artist.id] || [], // Asocia los álbumes con sus canciones correspondientes
         }));
 
         // Inserción en MongoDB usando insertMany para mejor rendimiento
-        await mongoCollection.insertMany(batchData);
+        if (batchData.length > 0) {
+          await mongoCollection.insertMany(batchData);
+        }
 
         const end = performance.now();
-        // console.log("id: ", artistIds);
         console.log(`Migrado lote desde el offset ${offset} con ${rows.length} registros en ${(end - start) / 1000} segundos.`);
 
         // Incrementar el offset para el siguiente lote
@@ -122,7 +155,7 @@ async function migrate() {
       }
     }
 
-    // Migrar artistas con sus álbumes
+    // Migrar artistas con sus álbumes y canciones
     await migrateInBatches(
       `SELECT a.*, t.nombre AS tipo_nombre, g.genero AS genero_nombre, l.nombre AS lugar_nombre
        FROM Artista a
