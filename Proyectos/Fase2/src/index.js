@@ -21,11 +21,76 @@ async function migrate() {
   });
   await pgClient.connect();
 
-  // Definir el tamaño del lote
-  const batchSize = 100000;
+  const batchSize = 10000;
 
   try {
     console.log("Inicio de la migración...");
+
+    // Función para obtener los géneros de un conjunto de artistas
+    async function getGenresForArtists(artistIds) {
+      const genresResult = await pgClient.query(`
+        SELECT ag.id, g.genero
+        FROM artista ag
+        JOIN genero g ON ag.genero = g.id
+        WHERE ag.id = ANY($1);
+      `, [artistIds]);
+
+      const genresMap = {};
+      genresResult.rows.forEach(row => {
+        if (!genresMap[row.artist_id]) {
+          genresMap[row.artist_id] = [];
+        }
+        genresMap[row.artist_id].push(row.genero);
+      });
+
+      return genresMap;
+    }
+
+    // Función para obtener los tags de un conjunto de artistas
+    async function getTagsForArtists(artistIds) {
+      const tagsResult = await pgClient.query(`
+        SELECT at.artist_id, t.nombre AS tag
+        FROM artistatag at
+        JOIN tags t ON at.tag_id = t.id
+        WHERE at.artist_id = ANY($1);
+      `, [artistIds]);
+
+      const tagsMap = {};
+      tagsResult.rows.forEach(row => {
+        if (!tagsMap[row.artist_id]) {
+          tagsMap[row.artist_id] = [];
+        }
+        tagsMap[row.artist_id].push(row.tag);
+      });
+
+      return tagsMap;
+    }
+
+    // Función para obtener los nombres de lugar asociados a los IDs
+    async function getPlacesForArtists(artistRows) {
+      const placeIds = [
+        ...new Set(
+          artistRows.flatMap(row => [
+            row.id_lugar,
+            row.lugar_inicio,
+            row.lugar_final,
+          ])
+        ),
+      ].filter(Boolean);
+
+      const placesResult = await pgClient.query(`
+        SELECT id, nombre
+        FROM lugar
+        WHERE id = ANY($1);
+      `, [placeIds]);
+
+      const placesMap = {};
+      placesResult.rows.forEach(place => {
+        placesMap[place.id] = place.nombre;
+      });
+
+      return placesMap;
+    }
 
     // Función para obtener las canciones de un álbum
     async function getSongsForAlbums(albumIds) {
@@ -44,7 +109,7 @@ async function migrate() {
           songsMap[song.album_id] = [];
         }
         songsMap[song.album_id].push({
-          track_id: song.id,
+
           numero: song.numero,
           nombre: song.nombre,
           duracion: song.duracion,
@@ -89,18 +154,17 @@ async function migrate() {
         });
       });
 
-      return albumsMap; // Retornar los álbumes agrupados por artista
+      return albumsMap;
     }
 
     // Función para manejar la migración por lotes de PostgreSQL a MongoDB
     async function migrateInBatches(query, mongoCollection) {
-      let offset = 0;
+      let offset = 1930000;
       let hasMoreRows = true;
 
       while (hasMoreRows) {
         const start = performance.now();
 
-        // Obtener el lote de datos desde PostgreSQL
         const result = await pgClient.query(`${query} LIMIT ${batchSize} OFFSET ${offset}`);
         const rows = result.rows;
 
@@ -109,25 +173,36 @@ async function migrate() {
           break;
         }
 
-        // Obtener IDs de los artistas en este lote
         const artistIds = rows.map(row => row.id);
 
-        // Obtener los álbumes de los artistas en este lote, junto con sus canciones
+        // const genresMap = await getGenresForArtists(artistIds);
+        const tagsMap = await getTagsForArtists(artistIds);
         const albumsMap = await getAlbumsForArtists(artistIds);
+        const placesMap = await getPlacesForArtists(rows);
 
-        // Transformar y preparar el lote de datos para insertar en MongoDB
         const batchData = rows.map(artist => ({
           pg_id: artist.id,
           nombre: artist.nombre,
           comentario: artist.comentario,
           tipo: {
+
             nombre: artist.tipo_nombre,
           },
           genero: {
+
             nombre: artist.genero_nombre,
           },
           lugar: {
-            nombre: artist.lugar_nombre,
+
+            nombre: placesMap[artist.id_lugar] || null,
+          },
+          lugar_inicio: {
+
+            nombre: placesMap[artist.lugar_inicio] || null,
+          },
+          lugar_final: {
+
+            nombre: placesMap[artist.lugar_final] || null,
           },
           inicio: {
             anio: artist.anio_inicio,
@@ -140,9 +215,10 @@ async function migrate() {
             dia: artist.dia_final,
           },
           discografia: albumsMap[artist.id] || [], // Asocia los álbumes con sus canciones correspondientes
+          // generos_musicales: genresMap[artist.id] || [], // Agregar géneros musicales asociados
+          generos_musicales: tagsMap[artist.id] || [] // Agregar tags del artista
         }));
 
-        // Inserción en MongoDB usando insertMany para mejor rendimiento
         if (batchData.length > 0) {
           await mongoCollection.insertMany(batchData);
         }
@@ -150,12 +226,11 @@ async function migrate() {
         const end = performance.now();
         console.log(`Migrado lote desde el offset ${offset} con ${rows.length} registros en ${(end - start) / 1000} segundos.`);
 
-        // Incrementar el offset para el siguiente lote
         offset += batchSize;
       }
     }
 
-    // Migrar artistas con sus álbumes y canciones
+    // Migrar artistas con sus álbumes, canciones, géneros, lugares, tipo de artista y tags
     await migrateInBatches(
       `SELECT a.*, t.nombre AS tipo_nombre, g.genero AS genero_nombre, l.nombre AS lugar_nombre
        FROM Artista a
