@@ -18,8 +18,8 @@
 
 |     CARPETA     |   MD   | Fecha Entrega | Prorroga |
 | :-------------: | :----: | :-----------: | :------: |
-| [Proyecto 1](./Proyectos/Proyecto1/) | [View](.) |      ---      |   ---   |
-| [Proyecto 2](./Proyectos/Proyecto2) | [View](.) |      ---      |   ---   |
+| [Proyecto 1 Fase 1](./Proyectos/Fase1/) | [View](.) | 16/Octubre |   ---   |
+| [Proyecto 2 Fase 2](./Proyectos/Fase2/) | [View](.) | 30/Octubre |   ---   |
 
 ### Enunciados
 
