@@ -63,8 +63,9 @@ await pgClient.connect();
 
 ```js
 const batchSize = 10000;
-Define el tamaño de cada lote para la migración, lo cual ayuda a controlar el consumo de memoria y tiempos de respuesta.
 ```
+
+Define el tamaño de cada lote para la migración, lo cual ayuda a controlar el consumo de memoria y tiempos de respuesta.
 
 #### Funciones Auxiliares de Extracción de Datos
 
@@ -110,6 +111,7 @@ async function getSongsForAlbums(albumIds) { ... }
 Devuelve un mapa de canciones agrupadas por ID de álbum, incluyendo detalles de cada canción.
 
 * getAlbumsForArtists
+
 Obtiene los álbumes de un conjunto de artistas, incluyendo información de canciones asociadas.
 
 ```js
@@ -238,6 +240,7 @@ Define el tamaño de cada lote para la migración, controlando así el rendimien
 Cada función auxiliar extrae datos específicos de PostgreSQL y los transforma en el formato necesario para MongoDB.
 
 * getDataPaises
+
 Obtiene información de los países (lugares) donde se lanzó cada álbum.
 
 ```js
@@ -247,6 +250,7 @@ async function getDataPaises(lanzamientoIds) { ... }
 Recibe un arreglo de IDs de lanzamientos y devuelve un mapa de lugares con fechas asociadas por lanzamiento.
 
 * getTagLanzamiento
+
 Obtiene las etiquetas (tags) asociadas a cada lanzamiento.
 
 ```js
