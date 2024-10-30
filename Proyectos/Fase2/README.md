@@ -318,6 +318,8 @@ migrate().catch(console.error);
 
 Inicia el proceso de migración y captura cualquier error que ocurra durante la ejecución, mostrando un mensaje de error en consola.
 
+---------------------------------------------
+
 ## Discografias `discografia.js`
 
 ### Descripción General
