@@ -1,221 +1,297 @@
--- Paises
-CREATE TABLE Country (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255),
-    iso_code VARCHAR(20)  -- Código ISO del país
+CREATE DATABASE musicbrainz;
+
+-- Generos
+CREATE TABLE Genero(
+    id INT PRIMARY KEY,
+    genero VARCHAR(25)
+);
+
+-- Conjunto de lugares, implica paises,regiones o ciudades
+CREATE TABLE lugar (
+    id INT PRIMARY KEY,
+    nombre VARCHAR(1000),
+    tipo VARCHAR(1000)
+);
+
+-- Conjunto de Tags Utilizados pora artistas, albumos, Ep, etc
+CREATE TABLE Tags(
+    id INT PRIMARY KEY,
+    nombre VARCHAR(500)
+);
+
+-- Tipos de empaquetado
+CREATE TABLE Empaquetado(
+    id INT PRIMARY KEY,
+    nombre VARCHAR(1000),
+    descripcion VARCHAR(1000)
+);
+
+
+-- El estado de lanzamientos
+CREATE TABLE Estado(
+    id INT PRIMARY KEY,
+    nombre VARCHAR(100),
+    descrpcion VARCHAR(1000)
+);
+
+-- Lenguaje de los lanzamientos
+CREATE TABLE Lenguaje(
+    id INT PRIMARY KEY,
+    iso_code1 VARCHAR(10),
+    iso_code2 VARCHAR(10),
+    iso_code3 VARCHAR(10),
+    nombre VARCHAR(1000),
+    frecuencia INT,
+    iso_code4 VARCHAR(10)
+);
+
+-- Idioma en el que fue escrito el titulo de los lanzamientos
+CREATE TABLE Scripts(
+    id INT Primary KEY,
+    iso_code VARCHAR(20),
+    iso_number INT,
+    nombre VARCHAR(1000),
+    frecuencia INT
+);
+
+
+-- Tabla que contiene el tipo de artista
+CREATE TABLE TipoArtista(
+    id INT PRIMARY KEY,
+    nombre VARCHAR(20)
 );
 
 -- Artistas
-CREATE TABLE Artist (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255),
-    sort_name VARCHAR(255),  -- Apellido, Nombre
-    begin_date DATE,
-    end_date DATE,
-    type VARCHAR(200),  -- 'Person' o 'Group'
-    gender VARCHAR(80),  -- 'Male', 'Female', etc.
-    country_id INT,
-    area VARCHAR(255),  -- Área geográfica del artista
-    description TEXT,
-    FOREIGN KEY (country_id) REFERENCES Country(id)
+CREATE TABLE Artista (
+    id INT PRIMARY KEY,
+    nombre VARCHAR(5000),
+    comentario VARCHAR(5000),
+    tipo INT,
+    genero INT,
+    id_lugar INT,
+    anio_inicio INT,
+    mes_inicio INT,
+    dia_inicio INT,
+    anio_final INT,
+    mes_final INT,
+    dia_final INT,
+    lugar_inicio INT,
+    lugar_final INT,
+    FOREIGN KEY (tipo) REFERENCES TipoArtista(id),
+    FOREIGN KEY (genero) REFERENCES Genero(id),
+    FOREIGN KEY (id_lugar) REFERENCES lugar(id),
+    FOREIGN KEY (lugar_inicio) REFERENCES lugar(id),
+    FOREIGN KEY (lugar_final) REFERENCES lugar(id)
 );
 
--- Créditos de Artista (colaboraciones)
-CREATE TABLE ArtistCredit (
+-- Carga de ISNI
+CREATE TABLE Isni(
     id SERIAL PRIMARY KEY,
-    name VARCHAR(255) -- Nombre del crédito colaborativo
+    id_artista INT,
+    isni_code VARCHAR(1000),
+    FOREIGN KEY (id_artista) REFERENCES Artista(id)
 );
 
--- Detalle de créditos de artista (relación entre Artist y ArtistCredit)
-CREATE TABLE ArtistCreditName (
-    artist_credit_id INT,
+-- Ratings de los artistas
+CREATE TABLE RatingArtist(
+    id SERIAL PRIMARY KEY,
+    id_artista INT,
+    rating INT,
+    num_ratings INT,
+    FOREIGN KEY (id_artista) REFERENCES Artista(id)
+);
+
+-- Relación Artista - Etiqueta
+CREATE TABLE ArtistaTag (
+    id SERIAL PRIMARY KEY,
     artist_id INT,
-    position INT,  -- Posición de los artistas en el crédito colaborativo
-    PRIMARY KEY (artist_credit_id, artist_id),
-    FOREIGN KEY (artist_credit_id) REFERENCES ArtistCredit(id),
-    FOREIGN KEY (artist_id) REFERENCES Artist(id)
+    tag_id INT,
+    FOREIGN KEY (artist_id) REFERENCES Artista(id),
+    FOREIGN KEY (tag_id) REFERENCES Tags(id)
 );
 
--- Albums
-CREATE TABLE Album (
+-- Créditos de Artista
+CREATE TABLE ArtistaCredit(
+    id_artista_credito INT PRIMARY KEY,
+    nombre VARCHAR(10000),
+    total_artistas INT
+);
+
+
+-- Relacion De Artista con Créditos
+CREATE TABLE NombreArtistaCredito(
     id SERIAL PRIMARY KEY,
-    title VARCHAR(255),
-    release_date DATE,
-    artist_id INT,  -- Clave foránea hacia Artist
-    FOREIGN KEY (artist_id) REFERENCES Artist(id)
+    id_artista_credito INT,
+    id_artista INT,
+    nombre_artista_individual VARCHAR(1000),
+    FOREIGN KEY (id_artista_credito) REFERENCES ArtistaCredit(id_artista_credito),
+    FOREIGN KEY (id_artista) REFERENCES Artista(id)
+);
+
+-- Tipo de Grupo de lanzamientos
+create table TipoGrupo(
+	id INT PRIMARY KEY,
+    nombre VARCHAR(20),
+    descripcion VARCHAR(5000)
+);
+
+-- Discografía
+CREATE TABLE Discografia (
+    id INT PRIMARY KEY,
+    titulo VARCHAR(10000),
+    tipo INT,
+    creditos INT,
+    rating INT,
+    num_calificaciones INT,
+    num_lanzamientos INT,
+    anio_salida INT,
+    mes_salida INT,
+    dia_salida INT,
+    FOREIGN KEY (creditos) REFERENCES ArtistaCredit(id_artista_credito),
+    FOREIGN KEY (tipo) REFERENCES TipoGrupo(id)
+);
+
+-- Tabla De Subgeneros/Subcategorías de los elementos de discografía
+CREATE TABLE DiscSubTipo(
+	id SERIAL PRIMARY KEY, 
+    id_disc INT,
+    subtipo VARCHAR(1000),
+    FOREIGN KEY (id_disc) REFERENCES Discografia(id)
+);
+
+-- PENDIENTEEEEEEEEEEEEEEEEEE
+-- Conjunto de tagas para elementos de la discografía
+CREATE TABLE TagsDisc (
+    id SERIAL PRIMARY KEY,
+    id_disc INT,
+    tag_id INT,
+    FOREIGN KEY (id_disc) REFERENCES Discografia(id),
+    FOREIGN KEY (tag_id) REFERENCES Tags(id)
+);
+
+
+-- CORRESPONDE A LAS TABLAS DE LANZAMIENTOS
+CREATE TABLE Lanzamientos(
+    id INT PRIMARY KEY,
+    nombre VARCHAR(5000),
+    creditos INT,
+    grupo_disc INT,
+    empaquetado INT,
+    estado INT,
+    lenguaje INT,
+    script INT,
+    cod_barra VARCHAR(6000),
+    calidad INT,
+    comentario VARCHAR(5000),
+    FOREIGN KEY (creditos) REFERENCES ArtistaCredit(id_artista_credito),
+    FOREIGN KEY (grupo_disc) REFERENCES Discografia(id),
+    FOREIGN KEY (empaquetado) REFERENCES Empaquetado(id),
+    FOREIGN KEY (estado) REFERENCES Estado(id),
+    FOREIGN KEY (lenguaje) REFERENCES Lenguaje(id)
+);
+
+-- Lista de lugares donde se realizó un lanzamiento
+CREATE TABLE lugarLanzamiento(
+    id SERIAL PRIMARY KEY,
+    id_lanzamiento INT,
+    id_lugar INT,
+    anio INT,
+    mes INT,
+    dia INT,
+    FOREIGN KEY (id_lanzamiento) REFERENCES lanzamientos(id),
+    FOREIGN KEY (id_lugar) REFERENCES lugar(id)
+);
+
+-- Sellos de los lanzamientos
+CREATE TABLE LabelLanzamientos(
+	id SERIAL PRIMARY KEY,
+    id_label INT,
+    id_lanzamiento INT,
+    descripcion VARCHAR(5000),
+    FOREIGN KEY (id_lanzamiento) REFERENCES Lanzamientos(id)
+);
+
+-- Catalogos de los lanzamientos
+CREATE TABLE CatalogoLanzamientos(
+    id_catalogo INT PRIMARY KEY,
+    id_lanzamiento INT,
+    catalogo VARCHAR(5000),
+    FOREIGN KEY (id_lanzamiento) REFERENCES Lanzamientos(id)
+);
+
+-- Medio (para almacenar formatos como CD, vinilo, digital, etc.)
+CREATE TABLE Medio (
+    id INT PRIMARY KEY,
+    release_id INT, 
+    formato VARCHAR(1000),
+    posicion INT, -- Posición del medio dentro del lanzamiento (CD1, CD2, etc.)
+    FOREIGN KEY (release_id) REFERENCES Lanzamientos(id)
+);
+
+-- Etiquetas para los lanazamientos
+CREATE TABLE TagLanzamientos(
+    id SERIAL PRIMARY KEY,
+    id_release INT,
+    id_tag INT,
+    FOREIGN KEY (id_release) REFERENCES Lanzamientos(id),
+    FOREIGN KEY (id_tag) REFERENCES Tags(id)
 );
 
 -- Grabaciones
 CREATE TABLE Recording (
-    id SERIAL PRIMARY KEY,
-    title VARCHAR(255),
-    length TIME,  -- Duración de la grabación
-    artist_credit_id INT,  -- Clave foránea hacia ArtistCredit
-    FOREIGN KEY (artist_credit_id) REFERENCES ArtistCredit(id)
+    id INT PRIMARY KEY,
+    title VARCHAR(1000),
+    artist_credit_id INT,
+    duracion INT,
+    comentario VARCHAR(5000),
+    FOREIGN KEY (artist_credit_id) REFERENCES ArtistaCredit(id_artista_credito)
 );
 
--- Tracks (modificada)
+-- Rating de las Grabaciones
+CREATE TABLE RatingRecording(
+    id SERIAL PRIMARY KEY,
+    id_recording INT,
+    calificacion INT,
+    num_calificaciones INT,
+    FOREIGN KEY(id_recording) REFERENCES Recording(id)
+);
+
+-- ISRC de las grabaciones
+CREATE TABLE ISRCRecording(
+    id INT PRIMARY KEY,
+    id_recording INT,
+    valor_isrc VARCHAR(5000),
+    FOREIGN KEY(id_recording) REFERENCES Recording(id)
+);
+
+-- Tags de las grabaciones
+CREATE TABLE TagRecording(
+    id SERIAL PRIMARY KEY,
+    id_recording INT,
+    id_tag INT,
+    FOREIGN KEY (id_recording) REFERENCES Recording(id),
+    FOREIGN KEY (id_tag) REFERENCES Tags(id)
+);
+
+-- Artistas encargado de cada recording
+CREATE TABLE ArtistaRecording(
+    id INT PRIMARY KEY,
+    id_artista INT,
+    id_recording INT,
+    FOREIGN KEY (id_artista) REFERENCES Artista(id),
+    FOREIGN KEY (id_recording) REFERENCES Recording(id)
+);
+
+-- Tracks
 CREATE TABLE Track (
-    id SERIAL PRIMARY KEY,
-    title VARCHAR(255),
-    duration TIME,
-    album_id INT,  -- Clave foránea hacia Album
-    recording_id INT,  -- Clave foránea hacia Recording
-    rating FLOAT DEFAULT 0.0,  -- Puntuación de la canción (punteo de estrellas)
-    FOREIGN KEY (album_id) REFERENCES Album(id),
-    FOREIGN KEY (recording_id) REFERENCES Recording(id)
-);
-
--- Género
-CREATE TABLE Genre (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(200)
-);
-
--- Relación Artista - Género
-CREATE TABLE ArtistGenre (
-    artist_id INT,
-    genre_id INT,
-    PRIMARY KEY (artist_id, genre_id),
-    FOREIGN KEY (artist_id) REFERENCES Artist(id),
-    FOREIGN KEY (genre_id) REFERENCES Genre(id)
-);
-
--- Relación Canción - Género
-CREATE TABLE TrackGenre (
-    track_id INT,
-    genre_id INT,
-    PRIMARY KEY (track_id, genre_id),
-    FOREIGN KEY (track_id) REFERENCES Track(id),
-    FOREIGN KEY (genre_id) REFERENCES Genre(id)
-);
-
--- Alias de Artista
-CREATE TABLE ArtistAlias (
-    id SERIAL PRIMARY KEY,
-    artist_id INT,  -- Clave foránea hacia Artist
-    alias VARCHAR(255),  -- Alias o nombre alternativo
-    sort_name VARCHAR(255),  -- Nombre para ordenación
-    FOREIGN KEY (artist_id) REFERENCES Artist(id)
-);
-
--- Sellos
-CREATE TABLE Label (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255),
-    country_id INT,  -- Clave foránea hacia Country
-    established_date DATE,
-    description TEXT,
-    FOREIGN KEY (country_id) REFERENCES Country(id)
-);
-
--- Relación Album - Sello
-CREATE TABLE AlbumLabel (
-    album_id INT,
-    label_id INT,
-    PRIMARY KEY (album_id, label_id),
-    FOREIGN KEY (album_id) REFERENCES Album(id),
-    FOREIGN KEY (label_id) REFERENCES Label(id)
-);
-
--- Derechos de Autor
-CREATE TABLE Copyright (
-    id SERIAL PRIMARY KEY,
-    copyright_holder VARCHAR(255),  -- Quién posee los derechos
-    copyright_year INT,  -- Año del derecho de autor
-    copyright_notice TEXT,  -- Aviso de copyright
-    type VARCHAR(80)  -- Tipo: 'Song' o 'Album'
-);
-
--- Derechos de Autor en Album
-CREATE TABLE AlbumCopyright (
-    album_id INT,
-    copyright_id INT,
-    PRIMARY KEY (album_id, copyright_id),
-    FOREIGN KEY (album_id) REFERENCES Album(id),
-    FOREIGN KEY (copyright_id) REFERENCES Copyright(id)
-);
-
--- Derechos de Autor en Canción
-CREATE TABLE TrackCopyright (
-    track_id INT,
-    copyright_id INT,
-    PRIMARY KEY (track_id, copyright_id),
-    FOREIGN KEY (track_id) REFERENCES Track(id),
-    FOREIGN KEY (copyright_id) REFERENCES Copyright(id)
-);
-
--- Puntuación de Canciones
-CREATE TABLE Rating (
-    id SERIAL PRIMARY KEY,
-    track_id INT,  -- Clave foránea hacia la canción
-    user_id INT,   -- Clave foránea hacia el usuario que califica
-    rating INT CHECK (rating BETWEEN 1 AND 5),  -- Puntuación de 1 a 5 estrellas
-    FOREIGN KEY (track_id) REFERENCES Track(id)
-);
-
--- Etiquetas
-CREATE TABLE Tag (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(200)
-);
-
--- Relación Artista - Etiqueta
-CREATE TABLE ArtistTag (
-    artist_id INT,
-    tag_id INT,
-    PRIMARY KEY (artist_id, tag_id),
-    FOREIGN KEY (artist_id) REFERENCES Artist(id),
-    FOREIGN KEY (tag_id) REFERENCES Tag(id)
-);
-
--- Relación Album - Etiqueta
-CREATE TABLE AlbumTag (
-    album_id INT,
-    tag_id INT,
-    PRIMARY KEY (album_id, tag_id),
-    FOREIGN KEY (album_id) REFERENCES Album(id),
-    FOREIGN KEY (tag_id) REFERENCES Tag(id)
-);
-
--- Relación Canción - Etiqueta
-CREATE TABLE TrackTag (
-    track_id INT,
-    tag_id INT,
-    PRIMARY KEY (track_id, tag_id),
-    FOREIGN KEY (track_id) REFERENCES Track(id),
-    FOREIGN KEY (tag_id) REFERENCES Tag(id)
-);
-
--- Lanzamientos
-CREATE TABLE Release (
-    id SERIAL PRIMARY KEY,
-    title VARCHAR(255),  -- Título del lanzamiento
-    release_group_id INT,  -- Clave foránea hacia ReleaseGroup
-    artist_credit_id INT,  -- Clave foránea hacia ArtistCredit
-    release_date DATE,     -- Fecha de lanzamiento
-    label_id INT,              -- Clave foránea hacia Label
-    country_id INT,            -- Clave foránea hacia Country
-    FOREIGN KEY (release_group_id) REFERENCES ReleaseGroup(id),
-    FOREIGN KEY (artist_credit_id) REFERENCES ArtistCredit(id),
-    FOREIGN KEY (label_id) REFERENCES Label(id),
-    FOREIGN KEY (country_id) REFERENCES Country(id)
-);
-
--- Grupo de Lanzamientos
-CREATE TABLE ReleaseGroup (
-    id SERIAL PRIMARY KEY,
-    title VARCHAR(255),  -- Título del grupo de lanzamiento
-    artist_credit_id INT, -- Clave foránea hacia ArtistCredit
-    type VARCHAR(200),   -- Tipo de grupo (Álbum, EP, Single, etc.)
-    FOREIGN KEY (artist_credit_id) REFERENCES ArtistCredit(id)
-);
-
--- Medio (para almacenar formatos como CD, vinilo, digital, etc.)
-CREATE TABLE Medium (
-    id SERIAL PRIMARY KEY,
-    release_id INT,         -- Clave foránea hacia Release
-    format VARCHAR(200),   -- Formato del medio (CD, Vinilo, Digital, etc.)
-    position INT,               -- Posición del medio dentro del lanzamiento (CD1, CD2, etc.)
-    FOREIGN KEY (release_id) REFERENCES Release(id)
+    id INT PRIMARY KEY,
+    id_recording INT,
+    id_medio INT,
+    numero VARCHAR(3000),
+    nombre VARCHAR(5000),
+    id_creditos INT, 
+    duracion INT,
+    FOREIGN KEY (id_recording) REFERENCES Recording(id),
+    FOREIGN KEY (id_medio) REFERENCES Medio(id),
+    FOREIGN KEY (id_creditos) REFERENCES ArtistaCredit(id_artista_credito)
 );
